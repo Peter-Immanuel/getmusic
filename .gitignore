@@ -1,0 +1,11 @@
+.pytest_cache/
+**/__pycache__
+/bin/
+*.exe
+*.exe~
+.vscode
+/getmusic/
+.DS_Store
+**.DS_Store
+/api/.DS_Store
+/utils/getmusic
