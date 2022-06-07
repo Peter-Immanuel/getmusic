@@ -1,8 +1,10 @@
+from typing import Union, List
 from fastapi import (
    APIRouter, status, Depends,
    Query
 )
 from fastapi.exceptions import HTTPException
+from pydantic import Field
 from services.music import MusicService
 from schemas.music import MusicDetails
 from api.schemas import SongDetails
@@ -13,14 +15,24 @@ router = APIRouter(prefix="/music", tags=["MUSIC"])
 
 
 @router.post("/", response_model=MusicDetails)
-async def create_music(music: SongDetails, database = Depends(get_database)):
-   a = music.dict()
-   b = MusicDetails(**a)
-   print()
-   print(a)
-   print()
-   print(b)
-   print()
-   new_music = MusicService(database).add_music(b)
+async def create_song(
+      music: SongDetails, 
+      database = Depends(get_database)
+   ) -> MusicDetails:
+   song = MusicDetails(**music.dict())
+   new_music = MusicService(database).add_music(song)
    print(new_music)
    return new_music
+
+
+@router.get("/", response_model=List[MusicDetails])
+async def list_songs(
+   page: int = Query(default=1, alias="page", ge=1),
+   size: int = Query(default=10, alias="size", ge=10, le=500),
+   title_filter: str = Query(default=None, alias="Search by title"),
+   lyric_filter: str = Query(default=None, alias="Search by lyric"),
+   database = Depends(get_database)
+) -> List[MusicDetails]:
+
+   songs_list = MusicService(database).list_songs(page,size)
+   return songs_list
