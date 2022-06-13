@@ -6,7 +6,7 @@ from .base import BaseSchema
 
 
 
-class MusicDetails(BaseModel):
+class Music(BaseModel):
    ''' Music Entity Schema '''
    
    id: UUID = Field(default_factory=uuid4)
@@ -23,9 +23,9 @@ class MusicDetails(BaseModel):
 
 
 
-class Music(BaseSchema):
+class MusicBucket(BaseSchema):
    ''' Bucket Schema pattern '''
    
    id: str = Field(default_factory=create_id)
    count: int = 0
-   songs: List[MusicDetails]
+   songs: List[Music]

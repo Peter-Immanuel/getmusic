@@ -1,4 +1,5 @@
 from typing import Union, List
+from uuid import UUID
 from fastapi import (
    APIRouter, status, Depends,
    Query
@@ -36,3 +37,12 @@ async def list_songs(
 
    songs_list = MusicService(database).list_songs(page,size)
    return songs_list
+
+
+@router.get("/{id}", response_model=MusicDetails)
+async def get_song(id:UUID, database = Depends(get_database)):
+   song = MusicService(database).get_song(id)
+
+   # if not song:
+   #    raise HTTPException(status_code=404, detail="Song not found")
+   return song

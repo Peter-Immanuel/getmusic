@@ -1,6 +1,7 @@
+from uuid import UUID
 from pymongo.database import Database
 from utils.helpers import create_id
-from schemas.music import Music, MusicDetails
+from schemas.music import Music
 
 
 
@@ -8,46 +9,34 @@ class DBMusic:
    def __init__(self, database: Database):
       self.music = database["music"]
 
-   def add(self, song: MusicDetails):
-      db_query_exp = (
-         {"id": "getMusic_", "count":{"$lt":500}}, #query to find a bucket
-         {
-            "$push": {"songs":song.dict()},
-            "$inc": {"count":1},
-            "$setOnInsert": {"id":create_id()}
-         },
-      )
-      self.music.update_one(filter=db_query_exp[0], update=db_query_exp[1], upsert=True)
+   def add(self, song: Music):
+      self.music.insert_one(song.dict())
       return song
 
    def list(self, page: int = None, size: int = None, **filter):
-      
-      query = {"id":"getMusic_"}
-
       # update query if filter is present
-      query = query.update({"song":filter.dict()}) if filter else query
+      songs = self.music.find(filter)
 
-      # Get buckets from database.
-      query_list = self.music.find(query)
-
-      # convert bucket data into Music Schema
-      modified_query_list = [Music(**doc) for doc in query_list]   
-
-      # extract all songs from each bucket
-      songs_list = []
-      for doc in modified_query_list:
-         songs_list.extend(doc.songs)
-
-      # convert songs to JSON to be consumed by frontend 
-      result = [song.dict() for song in songs_list]
-      return result 
-
+      paginated_song = (
+         songs.skip(size * (page-1)).limit(size)
+         if (page and size) is not None else songs
+      )
+      return [Music(**song) for song in paginated_song]
       
-   def get(self):
-      pass
 
-   def update(self):
-      pass
+   def get(self, id: UUID):
+      music = self.music.find_one({"id":id})
 
-   def delete(self):
-      pass
+      if music is None:
+         return None
+      return music    
+
+   def update(self, id:UUID, song:Music):
+      query = {"id":id}
+      newvalues = {"$set": song.dict()}
+      self.music.update_one(query, newvalues)
+      return self.get(id)
+
+   def delete(self, id:UUID):
+      self.music.delete_one({"id":id})
+      return None

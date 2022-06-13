@@ -1,3 +1,4 @@
+from uuid import UUID
 from database.music import DBMusic
 from schemas.music import MusicDetails
 
@@ -15,3 +16,8 @@ class MusicService:
    def list_songs(self, page:int = None, size: int = None, **filter):
       songs_list = DBMusic(self.db).list()
       return songs_list
+
+   def get_song(self, id:UUID):
+      song = DBMusic(self.db).get(id)
+      if not song:
+         return None
