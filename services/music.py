@@ -1,6 +1,6 @@
 from uuid import UUID
 from database.music import DBMusic
-from schemas.music import MusicDetails
+from schemas.music import Music
 
 
 
@@ -8,8 +8,7 @@ class MusicService:
    def __init__(self, database):
       self.db = database
 
-
-   def add_song(self, song: MusicDetails):
+   def add_song(self, song: Music):
       new_song = DBMusic(self.db).add(song)
       return new_song
 
@@ -21,3 +20,10 @@ class MusicService:
       song = DBMusic(self.db).get(id)
       if not song:
          return None
+
+   def update_song(self, id:UUID, song:Music):
+      song = DBMusic.update(id, song)
+      return song
+
+   def delete_song(self, id):
+      return DBMusic.delete(id)

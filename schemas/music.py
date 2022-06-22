@@ -1,13 +1,13 @@
 from typing import Union, List
 from utils.helpers import create_id
 from uuid import UUID, uuid4
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl
 from .base import BaseSchema
 
 
 
 class Music(BaseModel):
-   ''' Music Entity Schema '''
+   ''' Music Entity Schema to get music from database '''
    
    id: UUID = Field(default_factory=uuid4)
    title: str 
@@ -18,7 +18,7 @@ class Music(BaseModel):
    album: Union[str, None]
    genre: Union[str, None]
    art: Union[str, None] #TODO integrate s3 bucket here to upload music image.
-   link: str 
+   link: HttpUrl
    downloads: int = Field(default=0, ge=0)
 
 
