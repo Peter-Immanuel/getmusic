@@ -20,10 +20,11 @@ class MusicService:
       song = DBMusic(self.db).get(id)
       if not song:
          return None
+      return song
 
    def update_song(self, id:UUID, song:Music):
-      song = DBMusic.update(id, song)
+      song = DBMusic(self.db).update(id, song)
       return song
 
    def delete_song(self, id):
-      return DBMusic.delete(id)
+      return DBMusic(self.db).delete(id)

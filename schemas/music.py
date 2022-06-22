@@ -18,7 +18,7 @@ class Music(BaseModel):
    album: Union[str, None]
    genre: Union[str, None]
    art: Union[str, None] #TODO integrate s3 bucket here to upload music image.
-   link: HttpUrl
+   link: str
    downloads: int = Field(default=0, ge=0)
 
 

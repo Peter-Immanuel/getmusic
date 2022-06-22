@@ -1,9 +1,9 @@
-from typing import Union, List
+from typing import Dict, Union, List
 from uuid import UUID
 from fastapi import (
    APIRouter, status, 
    Depends,Query,
-   status,
+   status,Response
 )
 from fastapi.exceptions import HTTPException
 from pydantic import Field
@@ -81,10 +81,10 @@ async def update_song(id:UUID, song:SongDetails, database=Depends(get_database))
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_song(id:UUID, database=Depends(get_database)) -> None:
+async def delete_song(id:UUID, database=Depends(get_database)) -> Dict:
    try:
-      song = MusicService(database).delete_song(id)
-      return None
+      MusicService(database).delete_song(id)
+      return Response(status_code=status.HTTP_204_NO_CONTENT)
    except Exception as e:
       raise HTTPException(
          status_code=status.HTTP_,
