@@ -1,4 +1,3 @@
-from distutils.text_file import TextFile
 from uuid import uuid4
 from django.db import models
 
@@ -6,10 +5,11 @@ from django.db import models
 
 class Song(models.Model):
 
-   id = models.UUIDField(unique=True, primary_key=True, default=uuid4)
+   id = models.UUIDField(unique=True, primary_key=True, default=uuid4, editable=False)
 
    title = models.CharField(max_length=150)
-   # engine 
+   engine = models.ForeignKey("Engine", on_delete=models.SET_NULL, null=True)
+   playlists = models.ManyToManyField("Playlist")
 
    format = models.CharField(max_length=20, blank=True, null=True)
    artist = models.CharField(max_length=150, blank=True, null=True)
@@ -25,9 +25,6 @@ class Song(models.Model):
    updated_at = models.DateTimeField(auto_now=True)
    created_at = models.DateTimeField(auto_now_add=True, editable=False)
 
-   class Meta:
-      verbose_name = "Song"
-      verbose_name = "Songs"
 
    def __str__(self):
       return self.title
@@ -36,14 +33,11 @@ class Song(models.Model):
    
 class Engine(models.Model):
 
-   id = models.UUIDField(unique=True, primary_key=True, default=uuid4)
+   id = models.UUIDField(unique=True, primary_key=True, default=uuid4, editable=False)
    title = models.CharField(max_length=100)
    category = models.TextField()
    uri = models.URLField(blank=True, null=True)
 
-   class Meta:
-      verbose_name = "Engine"
-      verbose_name = "Engines"
 
    def __str__(self):
       return self.title
@@ -52,12 +46,11 @@ class Engine(models.Model):
 
 class Playlist(models.Model):
 
-   id = models.UUIDField(unique=True, primary_key=True, default=uuid4)
+   id = models.UUIDField(unique=True, primary_key=True, default=uuid4, editable=False)
    title = models.CharField(max_length=200)
+   songs = models.ManyToManyField(Song)
+   likes = models.IntegerField(default=0)
 
-   class Meta:
-      verbose_name = "Playlist"
-      verbose_name = "Playlists"
 
    def __str__(self):
       return self.title

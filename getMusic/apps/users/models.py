@@ -4,7 +4,9 @@ from django.db import models
 from django.contrib.auth.base_user import (
    AbstractBaseUser, BaseUserManager
 )
+from django.contrib.auth.models import PermissionsMixin
 from django.utils.translation import gettext_lazy as _
+from apps.music.models import Playlist
 
 from utils.constants import GENDER
 
@@ -41,20 +43,20 @@ class UserManager(BaseUserManager):
 
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
 
-   id = models.UUIDField(unique=True, default=uuid4, editable=False)
+   id = models.UUIDField(unique=True, primary_key=True, default=uuid4, editable=False)
 
    email = models.EmailField(unique=True, verbose_name="email address")
    password = models.CharField(max_length=128, verbose_name="password")
    username = models.CharField(max_length=150, unique=True)
    
    gender = models.CharField(max_length=7, choices=GENDER)  
-   date_of_birth = models.DateField()
+   date_of_birth = models.DateField(blank=True, null=True)
    
    followers = models.IntegerField(default=0)
    following = models.IntegerField(default=0)
-   # playlist = models
+   playlist = models.ManyToManyField(Playlist)
    
    is_active = models.BooleanField(default=True)
    is_staff = models.BooleanField(default=False)
